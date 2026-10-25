@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Izbori 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  --color-bg: #f7f8fa; --color-panel: #ffffff; --color-fg: #16191f; --color-fg-muted: #5d6573;
+  --color-border-line: #e3e6eb; --color-ok: #1f8a4c; --color-warn: #c98a00; --color-bad: #c43c3c;
+  --series-1: #2f5fd0; --series-2: #e0582b; --series-3: #12968a; --series-4: #8a5cd1; --series-5: #c9a227; --series-6: #d14d8b; --series-7: #5b8c3a; --series-8: #6b7280;
+  --cds-chart-muted: #c3c8d1; --cds-chart-grid: #eceef2; --cds-chart-axis: #b6bcc6; --cds-chart-reference: #8a919c;
+  --cds-surface-popover: #ffffff; --cds-border: #dadee5; --cds-shadow-popover: 0 4px 16px rgba(20,25,35,.12); --cds-text-secondary: #5d6573;
+  --font-anthropic-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-anthropic-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --cds-font-size-caption: .8125rem; --cds-font-size-body: 1rem; --cds-font-size-heading: 1.0625rem; --cds-font-size-title: 1.75rem;
+  --cds-font-weight-medium: 500;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 16px; --cds-gap-lg: 24px; --cds-gap-xl: 40px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-pad-xl: 28px;
+  --cds-radius: 8px; --cds-dur-slow: .4s; --cds-ease-out: cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #111318; --color-panel: #191c23; --color-fg: #e8eaef; --color-fg-muted: #9aa2b0;
+    --color-border-line: #2a2f39; --color-ok: #4cc27f; --color-warn: #e5b440; --color-bad: #ef6b6b;
+    --series-1: #6f93f0; --series-2: #f07f54; --series-3: #3cc2b4; --series-4: #ad88ea; --series-5: #e1c055; --series-6: #ea7bb0; --series-7: #8dbd6a; --series-8: #9aa2b0;
+    --cds-chart-muted: #4a505c; --cds-chart-grid: #23272f; --cds-chart-axis: #4a505c; --cds-chart-reference: #7d8592;
+    --cds-surface-popover: #20242c; --cds-border: #353b47; --cds-shadow-popover: 0 4px 16px rgba(0,0,0,.5); --cds-text-secondary: #9aa2b0;
+    color-scheme: dark;
+  }
+}
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
+#dash-root { max-width: 1200px; margin-inline: auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.dash-skeleton { color: transparent !important; background: var(--color-border-line); border-radius: 4px; }
+#pm-stamp.live::before { content: "● "; color: var(--color-ok); }
+a:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="dash-shim.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<style>
+.iz { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); font-variant-numeric: tabular-nums; }
+.iz-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.iz-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-muted); }
+.iz-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.iz-take { font-size: var(--cds-font-size-body); max-width: 70ch; margin: 0; line-height: 1.5; }
+.iz .iz-take b { font-weight: 600; }
+.iz-status { display: inline-flex; align-items: center; gap: var(--cds-gap-sm); align-self: flex-start; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: 999px; background: var(--color-panel); }
+.iz-dot { width: .5rem; height: .5rem; border-radius: 50%; background: var(--color-warn); }
+@media (prefers-reduced-motion: no-preference) { .iz-dot { animation: iz-pulse 1.6s var(--cds-ease-out) infinite; } }
+@keyframes iz-pulse { 50% { opacity: .35; } }
+.iz-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+.iz-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+.iz-tile-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; align-items: center; gap: var(--cds-gap-xs); }
+.iz-swatch { width: .625rem; height: .625rem; border-radius: 2px; flex: none; }
+.iz-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.35); line-height: 1.1; }
+.iz-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.iz-up { color: var(--color-ok); } .iz-down { color: var(--color-bad); }
+.iz-section { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+.iz-h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.iz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+.iz-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.iz-card-title { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.iz-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.45; }
+.iz-chart { position: relative; min-height: 240px; }
+.iz-chart.short { min-height: 96px; }
+.iz-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 5; }
+.iz-tip .t { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.iz-tip .r { display: flex; align-items: center; gap: 6px; }
+.iz-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.iz-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.iz-tablewrap { overflow-x: auto; }
+.iz-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); }
+.iz-table th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.iz-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); }
+.iz-table .num { text-align: right; }
+.iz-table tr:last-child td { border-bottom: none; }
+.iz-bar { height: 6px; border-radius: 3px; background: var(--cds-chart-muted); min-width: 2px; }
+.iz-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-sm) var(--cds-gap-lg); margin: 0; }
+.iz-facts div { display: flex; flex-direction: column; gap: 2px; padding-block: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); }
+.iz-facts dt { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.iz-facts dd { margin: 0; font-size: var(--cds-font-size-heading); }
+.iz-split { display: flex; height: 36px; border-radius: var(--cds-radius); overflow: hidden; }
+.iz-split div { display: flex; align-items: center; padding-inline: var(--cds-pad-sm); color: var(--color-bg); font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); white-space: nowrap; overflow: hidden; }
+.iz-split-labels { display: flex; justify-content: space-between; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.iz-link { color: inherit; }
+.iz-proj { display: flex; align-items: baseline; gap: var(--cds-gap-md); flex-wrap: wrap; }
+.iz-methods { display: flex; flex-direction: column; gap: var(--cds-gap-xs); margin: 0; }
+.iz-methods div { display: flex; justify-content: space-between; gap: var(--cds-gap-md); padding-block: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); }
+.iz-methods dt { color: var(--color-fg-muted); }
+.iz-methods dd { margin: 0; font-weight: 600; white-space: nowrap; }
+.iz-est { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+.iz-est-row { display: flex; flex-direction: column; gap: 6px; }
+.iz-est-head { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+.iz-est-head span:first-child { font-weight: var(--cds-font-weight-medium); }
+.iz-est-head span:last-child { color: var(--color-fg-muted); }
+.iz-est .iz-split { height: 28px; }
+.iz-sliders { display: grid; grid-template-columns: 1fr; gap: 4px var(--cds-gap-md); font-size: var(--cds-font-size-caption); padding-top: var(--cds-pad-sm); border-top: 1px solid var(--color-border-line); }
+.iz-sliders label { color: var(--color-fg-muted); display: flex; justify-content: space-between; gap: var(--cds-gap-sm); margin-top: 6px; }
+.iz-sliders label b { color: var(--color-fg); }
+.iz-sliders input { width: 100%; accent-color: var(--series-2); }
+.iz-btn { justify-self: start; margin-top: var(--cds-gap-sm); font: inherit; font-size: var(--cds-font-size-caption); padding: 6px 12px; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); cursor: pointer; }
+.iz-btn:hover { border-color: var(--cds-chart-axis); }
+.iz-btn:focus-visible, .iz-sliders input:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+.iz-wait { display: flex; align-items: center; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding: var(--cds-pad-md); border: 1px dashed var(--color-border-line); border-radius: var(--cds-radius); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.iz-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; height: 100%; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.iz-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="iz">
+  <header class="iz-head" id="top">
+    <div class="iz-eyebrow">Parlamentarni izbori · nedjelja, 25. oktobar 2026.</div>
+    <h1 class="iz-title">Izbori 2026: Ujedinjena Srbija protiv Studentske liste</h1>
+    <p class="iz-take" id="takeaway">
+      Polymarket daje <b data-source="pm_odds" data-field="yes" data-where="list=Aleksandar Vučić – United Serbia" class="dash-skeleton">—</b> šanse Vučićevoj Ujedinjenoj Srbiji i
+      <b data-source="pm_odds" data-field="yes" data-where="list=Student List – Students Win" class="dash-skeleton">—</b> Studentskoj listi da osvoje najviše mandata.
+      Izlaznost je do <span id="tk-time">—</span> dostigla <b id="tk-turnout" data-source="turnout" data-field="turnout" class="dash-skeleton">—</b>, a procjena konačne izlaznosti je
+      <b id="tk-proj" data-source="turnout facts" class="dash-skeleton">—</b>, naspram <b data-source="facts" data-field="value" data-where="key=turnout_2023" class="dash-skeleton">—</b> iz 2023. Komentatori smatraju da vrlo visoka izlaznost ide u prilog studentima.
+    </p>
+    <div class="iz-status"><span class="iz-dot"></span><span id="countdown">Glasanje je u toku. Birališta se zatvaraju u 20:00.</span></div>
+  </header>
+
+  <section class="iz-tiles" id="tiles">
+    <div class="iz-tile">
+      <div class="iz-tile-label"><span class="iz-swatch sw-sns"></span>Ujedinjena Srbija (SNS) osvaja najviše mandata</div>
+      <div class="iz-big dash-skeleton" data-source="pm_odds" data-field="yes" data-where="list=Aleksandar Vučić – United Serbia">—</div>
+      <div class="iz-sub"><span id="t-sns-chg" data-source="pm_odds" data-field="day_change" data-where="list=Aleksandar Vučić – United Serbia">—</span> p.p. u posljednja 24 sata</div>
+    </div>
+    <div class="iz-tile">
+      <div class="iz-tile-label"><span class="iz-swatch sw-stu"></span>Studentska lista osvaja najviše mandata</div>
+      <div class="iz-big dash-skeleton" data-source="pm_odds" data-field="yes" data-where="list=Student List – Students Win">—</div>
+      <div class="iz-sub"><span id="t-stu-chg" data-source="pm_odds" data-field="day_change" data-where="list=Student List – Students Win">—</span> p.p. u posljednja 24 sata</div>
+    </div>
+    <div class="iz-tile">
+      <div class="iz-tile-label">Procjena konačne izlaznosti (20:00)</div>
+      <div class="iz-big dash-skeleton" id="t-proj" data-source="turnout facts">—</div>
+      <div class="iz-sub"><span id="t-proj-range">—</span> · konačna 2023: <span data-source="facts" data-field="value" data-where="key=turnout_2023">—</span></div>
+    </div>
+    <div class="iz-tile">
+      <div class="iz-tile-label">Promet na Polymarketu</div>
+      <div class="iz-big dash-skeleton" data-source="facts" data-field="value" data-where="key=pm_volume">—</div>
+      <div class="iz-sub">Likvidnost <span data-source="facts" data-field="value" data-where="key=pm_liquidity">—</span></div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="estimates">
+    <h2 class="iz-h2">Procjene</h2>
+    <div class="iz-grid">
+      <div class="iz-card" id="turnout-proj-card">
+        <h3 class="iz-card-title">Kolika će biti izlaznost u 20:00?</h3>
+        <p class="iz-note">Procjena iz presjeka koji su do sada objavljeni, uz pretpostavku da glasanje do kraja dana teče kao 2023.</p>
+        <div class="iz-proj">
+          <div class="iz-big" id="pj-mid" data-source="turnout facts">—</div>
+          <div class="iz-sub">raspon <span id="pj-range">—</span></div>
+        </div>
+        <dl class="iz-methods">
+          <div><dt>Ako 2026. zadrži isti odnos prema 2023. kao u <span id="pj-ratio-h">—</span></dt><dd id="pj-ratio">—</dd></div>
+          <div><dt>Ako od <span id="pj-add-h">—</span> do 20:00 glasa onoliko birača koliko i 2023.</dt><dd id="pj-add">—</dd></div>
+        </dl>
+        <p class="iz-note">Presjek od 18:00 (64,3%) objavila je Studentska lista, pa nije uključen u procjenu. Danas.rs je jutros prenio procjenu od 77,5% (raspon 71,9–83,1%).</p>
+      </div>
+      <div class="iz-card" id="win-card">
+        <h3 class="iz-card-title">Ko pobjeđuje? Tri procjene</h3>
+        <p class="iz-note" id="win-verdict">—</p>
+        <div class="iz-est" id="win-rows" data-source="pm_odds polls turnout facts"></div>
+        <div class="iz-sliders">
+          <label for="sl-turnout">Izlaznost u modelu <b id="sl-turnout-v">—</b></label>
+          <input type="range" id="sl-turnout" min="55" max="85" step="0.5">
+          <label for="sl-stu">Novi birači koji glasaju za Studentsku listu <b id="sl-stu-v">—</b></label>
+          <input type="range" id="sl-stu" min="20" max="90" step="1" value="65">
+          <label for="sl-sns">Novi birači koji glasaju za SNS <b id="sl-sns-v">—</b></label>
+          <input type="range" id="sl-sns" min="0" max="60" step="1" value="20">
+          <button type="button" id="sl-reset" class="iz-btn">Vrati na procjenu</button>
+        </div>
+        <p class="iz-note">Model: oktobarski prosjek anketa važi za izlaznost iz 2023. Svaki birač preko toga dijeli se po klizačima iznad, a ostatak ide ostalim listama. Ovo je scenarij, ne zvanična projekcija.</p>
+      </div>
+      <div class="iz-card" id="proj-card">
+        <h3 class="iz-card-title">Prve projekcije CeSID-a i Ipsosa</h3>
+        <p class="iz-note">Projekcije na osnovu uzorka biračkih mjesta očekuju se između 21:30 i 22:00. Zakon zabranjuje objavljivanje procjena rezultata prije zatvaranja birališta.</p>
+        <div id="proj-body" data-source="projections"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="market">
+    <h2 class="iz-h2">Tržište</h2>
+    <div class="iz-grid">
+      <div class="iz-card" id="odds-card">
+        <h3 class="iz-card-title">Ko osvaja najviše mandata?</h3>
+        <p class="iz-note">Cijena udjela „Da“ u centima = procijenjena vjerovatnoća. <span id="pm-stamp">Učitavam Polymarket…</span></p>
+        <div id="split" data-source="pm_odds"></div>
+        <div class="iz-tablewrap">
+          <table class="iz-table" id="odds-table" data-source="pm_odds" data-row-key="list">
+            <thead><tr><th data-field="list">Izborna lista</th><th data-field="yes" class="num">Šansa</th><th data-field="volume" class="num">Promet</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="iz-note"><a class="iz-link" href="https://polymarket.com/event/serbia-parliamentary-election-winner-2026" target="_blank" rel="noopener">Otvori tržište na Polymarketu</a></p>
+      </div>
+      <div class="iz-card" id="history-card">
+        <h3 class="iz-card-title">Kvote od otvaranja tržišta</h3>
+        <p class="iz-note">Cijene po satu. Na dan izbora kvote su se naglo mijenjale: studenti su vodili veći dio popodneva, kako su stizali podaci o izlaznosti.</p>
+        <div class="iz-legend"><span><span class="iz-swatch sw-sns"></span>Ujedinjena Srbija (SNS)</span><span><span class="iz-swatch sw-stu"></span>Studentska lista</span></div>
+        <div class="iz-chart" id="history" data-source="pm_history"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="turnout-sec">
+    <h2 class="iz-h2">Izlaznost danas</h2>
+    <div class="iz-grid">
+      <div class="iz-card">
+        <h3 class="iz-card-title">Udio birača koji su glasali, po satima</h3>
+        <p class="iz-note">2026. u poređenju sa istim satom u decembru 2023. Podaci kombinuju zvanični presjek RIK-a i procjene Ipsosa/CeSID-a i CRTA-e na osnovu uzorka biračkih mjesta. Isprekidana linija: konačna izlaznost 2023.</p>
+        <div class="iz-legend"><span><span class="iz-swatch sw-now"></span>2026</span><span><span class="iz-swatch sw-old"></span>2023, isti sat</span></div>
+        <div class="iz-chart" id="turnout-chart" data-source="turnout facts"></div>
+      </div>
+      <div class="iz-card">
+        <h3 class="iz-card-title">Presjeci izlaznosti</h3>
+        <p class="iz-note">Svaki podatak uz izvor koji ga je objavio.</p>
+        <div class="iz-tablewrap">
+          <table class="iz-table" id="turnout-table" data-source="turnout" data-row-key="time_cet">
+            <thead><tr><th data-field="time_cet">Vrijeme</th><th data-field="turnout" class="num">2026</th><th data-field="turnout_2023_same_hour" class="num">2023</th><th data-field="source">Izvor</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="polls-sec">
+    <h2 class="iz-h2">Ankete</h2>
+    <div class="iz-grid">
+      <div class="iz-card">
+        <h3 class="iz-card-title">Lista oko SNS-a protiv Studentske liste, ankete 2026.</h3>
+        <p class="iz-note">Udio glasova u svakoj objavljenoj anketi. Agencije se ne slažu: Faktor plus je SNS-u davao veliku prednost, a CRTA i NSPM su studente stavljali na prvo mjesto.</p>
+        <div class="iz-legend"><span><span class="iz-swatch sw-sns"></span>Koalicija oko SNS-a</span><span><span class="iz-swatch sw-stu"></span>Studentska lista</span></div>
+        <div class="iz-chart" id="polls-chart" data-source="polls"></div>
+      </div>
+      <div class="iz-card">
+        <h3 class="iz-card-title">Sve ankete</h3>
+        <p class="iz-note">Anketu Ipsosa od 22. oktobra naručila je Ujedinjena Srbija.</p>
+        <div class="iz-tablewrap">
+          <table class="iz-table" id="polls-table" data-source="polls" data-row-key="published">
+            <thead><tr><th data-field="published">Objavljeno</th><th data-field="pollster">Agencija</th><th data-field="sample" class="num">Uzorak</th><th data-field="sns" class="num">SNS</th><th data-field="student_list" class="num">Studenti</th><th data-field="sps" class="num">SPS</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="last-time">
+    <h2 class="iz-h2">Prošli put: decembar 2023.</h2>
+    <div class="iz-grid">
+      <div class="iz-card">
+        <h3 class="iz-card-title">Osvojeni mandati 2023.</h3>
+        <p class="iz-note">Crna linija označava većinu. SNS ju je osvojio sam. Opozicija koja je nastupila kao Srbija protiv nasilja u međuvremenu se raspala, a veliki dio njenih glasova prešao je Studentskoj listi.</p>
+        <div class="iz-chart short" id="seats-chart" data-source="results_2023 facts"></div>
+        <div class="iz-legend" id="seats-legend" data-source="results_2023"></div>
+      </div>
+      <div class="iz-card">
+        <h3 class="iz-card-title">Rezultati 2023. po listama</h3>
+        <p class="iz-note">Promjena broja mandata u odnosu na 2022.</p>
+        <div class="iz-tablewrap">
+          <table class="iz-table" id="r23-table" data-source="results_2023" data-row-key="list">
+            <thead><tr><th data-field="list">Lista</th><th data-field="vote_pct" class="num">Glasovi</th><th data-field="seats" class="num">Mandati</th><th data-field="seat_change" class="num">Promjena</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="iz-section" id="facts-sec">
+    <h2 class="iz-h2">Pravila izbora</h2>
+    <dl class="iz-facts">
+      <div><dt>Broj poslanika u Narodnoj skupštini</dt><dd data-source="facts" data-field="value" data-where="key=seats">—</dd></div>
+      <div><dt>Mandata potrebno za većinu</dt><dd data-source="facts" data-field="value" data-where="key=majority">—</dd></div>
+      <div><dt>Upisanih birača</dt><dd data-source="facts" data-field="value" data-where="key=voters">—</dd></div>
+      <div><dt>Izbornih lista na listiću</dt><dd data-source="facts" data-field="value" data-where="key=lists">—</dd></div>
+      <div><dt>Kandidata</dt><dd data-source="facts" data-field="value" data-where="key=candidates">—</dd></div>
+      <div><dt>Cenzus za ulazak u parlament (manjinske liste izuzete)</dt><dd data-source="facts" data-field="value" data-where="key=threshold">—</dd></div>
+    </dl>
+    <p class="iz-note">Mandati se raspodjeljuju na nivou cijele zemlje D'Ontovom metodom između lista koje pređu cenzus. Kontekst: izbori dolaze nakon više od godinu dana studentskih protesta, koji su počeli poslije pada nadstrešnice na Željezničkoj stanici u Novom Sadu 1. novembra 2024. Vučić je u septembru podnio ostavku na mjesto predsjednika da bi predvodio listu i kandidovao se za premijera.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  const SNS = 'Aleksandar Vučić – United Serbia', STU = 'Student List – Students Win';
+  const pct0 = d3.format('.0%'), pct1 = v => d3.format('.1f')(v) + '%';
+  const money = v => (v >= 1e6 ? d3.format('.1f')(v / 1e6) + ' mil.' : v >= 1e3 ? d3.format('.0f')(v / 1e3) + ' hilj.' : d3.format(',')(v)) + ' $';
+  const LISTS = {
+    'Aleksandar Vučić – United Serbia': 'Aleksandar Vučić – Ujedinjena Srbija',
+    'Student List – Students Win': 'Studentska lista – Studenti pobjeđuju',
+    'European Serbia – Marinika Tepić, Zdravko Ponoš': 'Evropska Srbija – Marinika Tepić, Zdravko Ponoš',
+    'Ivica Dačić – Factor of Stability!': 'Ivica Dačić – Faktor stabilnosti!',
+    'SDA of Sandžak – Guardians of Sandžak': 'SDA Sandžaka – Čuvari Sandžaka',
+    'Authentic Right – Dr Miloš Jovanović': 'Autentična desnica – dr Miloš Jovanović',
+    'Usame Zukorlić Movement for Unification': 'Usame Zukorlić – Pokret za ujedinjenje',
+    'Rasim Ljajić – Humane (SDP – CDP)': 'Rasim Ljajić – Humano (SDP – CDP)',
+    'Russian Party – Serbia in BRICS – Slobodan Nikolić': 'Ruska stranka – Srbija u BRIKS-u – Slobodan Nikolić',
+    'Alliance of Vojvodina Hungarians – Dr Bálint Pásztor': 'Savez vojvođanskih Mađara – dr Balint Pastor',
+    'United Serbia (SNS)': 'Ujedinjena Srbija (SNS)',
+    'Student List': 'Studentska lista'
+  };
+  const sr = name => LISTS[name] || name;
+  window.iz = {
+    SNS, STU, pct0, pct1, money, sr,
+    col: { sns: () => dash.colors[0], stu: () => dash.colors[1] },
+    fail(el) { el.textContent = ''; const d = document.createElement('div'); d.className = 'iz-fail'; d.textContent = 'Failed to load'; el.appendChild(d); },
+    fill(sel, text) { document.querySelectorAll(sel).forEach(el => { el.textContent = text; el.classList.remove('dash-skeleton'); }); },
+    tip(box) { let t = box.querySelector('.iz-tip'); if (!t) { t = document.createElement('div'); t.className = 'iz-tip'; t.hidden = true; box.appendChild(t); } return t; },
+    placeTip(box, tip, x, y) { const w = tip.offsetWidth, bw = box.clientWidth; tip.style.left = Math.max(0, Math.min(bw - w, x + 12 > bw - w ? x - w - 12 : x + 12)) + 'px'; tip.style.top = Math.max(0, y - 10) + 'px'; },
+    tipRow(tip, color, name, value) { const r = document.createElement('div'); r.className = 'r'; if (color) { const s = document.createElement('span'); s.className = 'iz-swatch'; s.style.background = color; r.appendChild(s); } const n = document.createElement('span'); n.textContent = name + ' '; const v = document.createElement('b'); v.textContent = value; r.append(n, v); tip.appendChild(r); },
+    cleanAxis(g) { g.attr('font-size', null).attr('font-family', null); g.selectAll('text').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)'); g.selectAll('.domain').attr('stroke', 'var(--cds-chart-axis)'); g.selectAll('.tick line').attr('stroke', 'var(--cds-chart-grid)'); }
+  };
+  dash.onData(() => {
+    document.querySelectorAll('.sw-sns').forEach(e => e.style.background = dash.colors[0]);
+    document.querySelectorAll('.sw-stu').forEach(e => e.style.background = dash.colors[1]);
+    document.querySelectorAll('.sw-now').forEach(e => e.style.background = dash.colors[2]);
+    document.querySelectorAll('.sw-old').forEach(e => e.style.background = 'var(--cds-chart-muted)');
+  });
+})();
+</script>
+
+<script>
+// Turnout projection helpers
+(function () {
+  const num = v => v === '' || v == null ? null : +v;
+  window.iz.turnoutRows = data => data.map(r => ({
+    time: r.time_cet, h: +r.time_cet.slice(0, 2), now: num(r.turnout), old: num(r.turnout_2023_same_hour),
+    src: r.source, unofficial: /nezvanično/.test(r.source || '')
+  })).sort((a, b) => a.h - b.h);
+
+  // Two ways to reach 20:00 from today's readings, both anchored on 2023's curve:
+  // ratio — today stays the same multiple of 2023 as at the last hour both are known;
+  // added — from the last reading, as many people vote until 20:00 as did in 2023.
+  window.iz.projectTurnout = (rows, fin) => {
+    const ok = rows.filter(r => r.now != null && !r.unofficial);
+    const old = rows.filter(r => r.old != null).map(r => ({h: r.h, v: r.old}));
+    if (fin != null && !old.some(d => d.h === 20)) old.push({h: 20, v: fin});
+    old.sort((a, b) => a.h - b.h);
+    const at = h => {
+      const i = old.findIndex(d => d.h >= h);
+      if (i < 0) return null; if (old[i].h === h || i === 0) return old[i].v;
+      const a = old[i - 1], b = old[i]; return a.v + (b.v - a.v) * (h - a.h) / (b.h - a.h);
+    };
+    const final23 = at(20), last = ok[ok.length - 1] || null;
+    const both = ok.filter(r => r.old != null), basis = both[both.length - 1] || null;
+    const ratio = basis && final23 != null ? basis.now * final23 / basis.old : null;
+    const added = last && final23 != null && at(last.h) != null ? last.now + (final23 - at(last.h)) : null;
+    const vals = [ratio, added].filter(v => v != null).map(v => Math.min(v, 100));
+    if (!vals.length) return {last, basis, mid: null};
+    return {last, basis, ratio, added, low: d3.min(vals), high: d3.max(vals), mid: d3.mean(vals)};
+  };
+})();
+</script>
+
+<script>
+// Countdown to the polls closing (20:00 Belgrade time)
+(function () {
+  const el = document.getElementById('countdown');
+  const tick = () => {
+    const now = new Date();
+    const bg = new Date(now.toLocaleString('en-US', {timeZone: 'Europe/Belgrade'}));
+    const close = new Date(bg); close.setHours(20, 0, 0, 0);
+    const mins = Math.ceil((close - bg) / 60000);
+    if (bg.getDate() !== 25 || bg.getMonth() !== 9) { el.textContent = 'Izbori su održani 25. oktobra 2026.'; return; }
+    if (mins > 0) {
+      const h = Math.floor(mins / 60), m = mins % 60;
+      el.textContent = `Glasanje je u toku. Birališta se zatvaraju u 20:00, za ${h ? h + ' h ' : ''}${m} min.`;
+    } else if (bg.getHours() < 22) {
+      el.textContent = 'Birališta su zatvorena. Prve projekcije CeSID-a i Ipsosa očekuju se između 21:30 i 22:00.';
+    } else {
+      el.textContent = 'Birališta su zatvorena. Prebrojavanje je u toku; zvanične rezultate objavljuje RIK.';
+    }
+  };
+  tick(); setInterval(tick, 30000);
+})();
+</script>
+
+<script>
+// Estimates: final turnout and who wins
+(function () {
+  const {pct0, pct1} = window.iz;
+  const ui = {t: document.getElementById('sl-turnout'), s: document.getElementById('sl-stu'), n: document.getElementById('sl-sns')};
+  let touched = false, proj = null;
+  ['t', 's', 'n'].forEach(k => ui[k].addEventListener('input', () => {
+    touched = true;
+    if (+ui.s.value + +ui.n.value > 100) (k === 's' ? ui.n : ui.s).value = 100 - +ui[k].value;
+    draw();
+  }));
+  document.getElementById('sl-reset').addEventListener('click', () => { touched = false; ui.s.value = 65; ui.n.value = 20; draw(); });
+
+  function split(box, a, b, labels) {
+    const bar = document.createElement('div'); bar.className = 'iz-split';
+    const rest = Math.max(0, 1 - a - b);
+    [[a, dash.colors[0]], [b, dash.colors[1]], [rest, 'var(--cds-chart-muted)']].forEach(([v, c], i) => {
+      if (v <= 0.005) return; const d = document.createElement('div'); d.style.flex = String(v); d.style.background = c;
+      d.textContent = i < 2 ? labels[i] : ''; bar.appendChild(d);
+    });
+    box.appendChild(bar);
+  }
+  function row(parent, title, note, a, b, labels) {
+    const r = document.createElement('div'); r.className = 'iz-est-row';
+    const h = document.createElement('div'); h.className = 'iz-est-head';
+    const t = document.createElement('span'); t.textContent = title; const n = document.createElement('span'); n.textContent = note;
+    h.append(t, n); r.appendChild(h); split(r, a, b, labels); parent.appendChild(r);
+  }
+
+  function draw() {
+    const o = dash.data('pm_odds'), p = dash.data('polls'), t = dash.data('turnout'), f = dash.data('facts');
+    const fin = f.status === 'ok' ? +(f.data.find(r => r.key === 'turnout_2023') || {}).value : null;
+    // turnout card
+    if (t.status === 'ok') {
+      proj = window.iz.projectTurnout(window.iz.turnoutRows(t.data), fin);
+      if (proj.mid != null) {
+        document.getElementById('pj-mid').textContent = pct1(proj.mid);
+        document.getElementById('pj-range').textContent = pct1(proj.low) + ' – ' + pct1(proj.high);
+        document.getElementById('pj-ratio').textContent = proj.ratio != null ? pct1(proj.ratio) : '—';
+        document.getElementById('pj-add').textContent = proj.added != null ? pct1(proj.added) : '—';
+        document.getElementById('pj-ratio-h').textContent = proj.basis ? proj.basis.time : '—';
+        document.getElementById('pj-add-h').textContent = proj.last ? proj.last.time : '—';
+      }
+    }
+    if (!touched && proj && proj.mid != null) ui.t.value = Math.round(proj.mid * 2) / 2;
+    document.getElementById('sl-turnout-v').textContent = pct1(+ui.t.value);
+    document.getElementById('sl-stu-v').textContent = ui.s.value + '%';
+    document.getElementById('sl-sns-v').textContent = ui.n.value + '%';
+
+    const box = document.getElementById('win-rows'); box.textContent = '';
+    if (o.status !== 'ok' || p.status !== 'ok' || fin == null) return;
+    const odds = Object.fromEntries(o.data.map(r => [r.list, +r.yes]));
+    const mSNS = odds[window.iz.SNS], mSTU = odds[window.iz.STU];
+    row(box, 'Polymarket', 'šansa za najviše mandata', mSNS, mSTU, [pct0(mSNS), pct0(mSTU)]);
+
+    const oct = p.data.filter(r => r.published >= '2026-10-01');
+    const base = oct.length ? oct : p.data;
+    const sns0 = d3.mean(base, r => +r.sns) / 100, stu0 = d3.mean(base, r => +r.student_list) / 100;
+    row(box, 'Prosjek anketa', `${base.length} ${base.length === 1 ? 'anketa' : base.length < 5 ? 'ankete' : 'anketa'} iz oktobra, udio glasova`, sns0, stu0, [pct1(sns0 * 100), pct1(stu0 * 100)]);
+
+    // turnout model: polls describe a 2023-sized electorate; extra voters split per the sliders
+    const T = +ui.t.value, T0 = fin, extra = Math.max(0, T - T0);
+    const aS = +ui.s.value / 100, aN = +ui.n.value / 100;
+    const sns = (sns0 * T0 + aN * extra) / (T0 + extra), stu = (stu0 * T0 + aS * extra) / (T0 + extra);
+    row(box, 'Model izlaznosti', `pri izlaznosti od ${pct1(T)}, udio glasova`, sns, stu, [pct1(sns * 100), pct1(stu * 100)]);
+
+    const lead = stu - sns;
+    const edge = (verb, l) => Math.abs(l) < 0.01 ? (verb === 'daju' ? 'pokazuju' : 'pokazuje') + ' izjednačenu trku'
+      : `${verb} prednost ${l > 0 ? 'Studentskoj listi' : 'SNS-u'} od ${d3.format('.1f')(Math.abs(l) * 100)} p.p.`;
+    const fav = mSNS > mSTU ? 'SNS' : 'Studentsku listu', top = Math.max(mSNS, mSTU);
+    document.getElementById('win-verdict').textContent =
+      `Tržište ${top < 0.65 ? 'blago' : 'jasno'} favorizuje ${fav} (${pct0(top)}). Ankete ${edge('daju', stu0 - sns0)}, ` +
+      `a model uz izlaznost od ${pct1(T)} ${edge('daje', lead)}`;
+  }
+  dash.onData(draw);
+})();
+</script>
+
+<script>
+// First CeSID/Ipsos projections, once they are in data/projections.csv
+dash.onData(() => {
+  const box = document.getElementById('proj-body'); box.textContent = '';
+  const d = dash.data('projections');
+  if (d.status !== 'ok' || !d.data.length) {
+    const w = document.createElement('div'); w.className = 'iz-wait';
+    const dot = document.createElement('span'); dot.className = 'iz-dot';
+    w.append(dot, document.createTextNode('Čeka se zatvaranje birališta i prve projekcije.')); box.appendChild(w); return;
+  }
+  const rows = d.data.map(r => ({...r, v: +r.vote_pct})).sort((a, b) => b.v - a.v);
+  const max = d3.max(rows, r => r.v);
+  const tbl = document.createElement('table'); tbl.className = 'iz-table';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.textContent = window.iz.sr(r.list);
+    const b = document.createElement('td'); b.style.width = '40%'; const bar = document.createElement('div'); bar.className = 'iz-bar';
+    bar.style.width = (r.v / max * 100) + '%';
+    bar.style.background = /SNS|United|Ujedinjena/.test(r.list) ? dash.colors[0] : /Student/.test(r.list) ? dash.colors[1] : 'var(--cds-chart-muted)';
+    b.appendChild(bar);
+    const c = document.createElement('td'); c.className = 'num'; c.textContent = window.iz.pct1(r.v);
+    tr.append(a, b, c); tbl.appendChild(tr);
+  });
+  box.appendChild(tbl);
+  const n = document.createElement('p'); n.className = 'iz-note'; n.textContent = (rows[0].source || '') + (rows[0].time ? ' · ' + rows[0].time : ''); box.appendChild(n);
+});
+</script>
+
+<script>
+// Headline numbers and odds table
+dash.onData(() => {
+  const {SNS, STU, pct0, pct1, money, fill, sr} = window.iz;
+  const o = dash.data('pm_odds'), t = dash.data('turnout'), f = dash.data('facts');
+  if (o.status === 'ok') {
+    const rows = o.data.map(r => ({...r, yes: +r.yes, volume: +r.volume, day_change: +r.day_change}));
+    const by = Object.fromEntries(rows.map(r => [r.list, r]));
+    fill(`[data-source="pm_odds"][data-field="yes"][data-where="list=${SNS}"]`, pct0(by[SNS].yes));
+    fill(`[data-source="pm_odds"][data-field="yes"][data-where="list=${STU}"]`, pct0(by[STU].yes));
+    [['#t-sns-chg', by[SNS].day_change], ['#t-stu-chg', by[STU].day_change]].forEach(([s, v]) => {
+      const el = document.querySelector(s); el.textContent = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.round(Math.abs(v) * 100);
+      el.className = v > 0 ? 'iz-up' : v < 0 ? 'iz-down' : '';
+    });
+    // split bar
+    const split = document.getElementById('split'); split.textContent = '';
+    const bar = document.createElement('div'); bar.className = 'iz-split';
+    const rest = Math.max(0, 1 - by[SNS].yes - by[STU].yes);
+    [[by[SNS].yes, dash.colors[0], 'Ujedinjena Srbija'], [by[STU].yes, dash.colors[1], 'Studentska lista'], [rest, 'var(--cds-chart-muted)', '']].forEach(([v, c, n]) => {
+      if (v <= 0.005) return; const d = document.createElement('div'); d.style.flex = String(v); d.style.background = c; d.textContent = n ? pct0(v) : ''; bar.appendChild(d);
+    });
+    const labs = document.createElement('div'); labs.className = 'iz-split-labels';
+    const a = document.createElement('span'); a.textContent = 'Ujedinjena Srbija (SNS)'; const b = document.createElement('span'); b.textContent = 'Studentska lista';
+    labs.append(a, b); split.append(bar, labs);
+    // table
+    const tb = document.querySelector('#odds-table tbody'); tb.textContent = '';
+    const vmax = d3.max(rows, r => r.volume);
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      const c1 = document.createElement('td'); c1.textContent = sr(r.list);
+      const c2 = document.createElement('td'); c2.className = 'num'; c2.textContent = r.yes < 0.01 ? '<1%' : pct0(r.yes);
+      const c3 = document.createElement('td'); c3.className = 'num'; c3.textContent = money(r.volume);
+      tr.append(c1, c2, c3); tb.appendChild(tr);
+    });
+  } else if (o.status === 'error') { window.iz.fail(document.getElementById('split')); }
+  if (t.status === 'ok') {
+    const fin = f.status === 'ok' ? +(f.data.find(r => r.key === 'turnout_2023') || {}).value : null;
+    const pj = window.iz.projectTurnout(window.iz.turnoutRows(t.data), fin);
+    if (pj.last) {
+      document.getElementById('tk-time').textContent = pj.last.time;
+      fill('#tk-turnout', pct1(pj.last.now));
+    }
+    if (pj.mid != null) {
+      const range = pct1(pj.low) + ' – ' + pct1(pj.high);
+      fill('#tk-proj', 'oko ' + pct1(pj.mid));
+      fill('#t-proj', pct1(pj.mid));
+      document.getElementById('t-proj-range').textContent = range;
+    }
+  }
+  if (f.status === 'ok') {
+    const v = Object.fromEntries(f.data.map(r => [r.key, +r.value]));
+    const fmt = {
+      turnout_2023: pct1, pm_volume: money, pm_liquidity: money, threshold: x => x + '%',
+      voters: x => d3.format('.2f')(x / 1e6) + ' miliona',
+      seats: d3.format(','), majority: d3.format(','), lists: d3.format(','), candidates: d3.format(',')
+    };
+    Object.keys(fmt).forEach(k => { if (k in v) fill(`[data-source="facts"][data-where="key=${k}"]`, fmt[k](v[k])); });
+  }
+});
+</script>
+
+<script>
+// Polymarket price history
+dash.onData(() => {
+  const box = document.getElementById('history');
+  const h = dash.data('pm_history');
+  box.querySelectorAll('svg, .iz-fail').forEach(e => e.remove());
+  if (h.status !== 'ok') { if (h.status === 'error') window.iz.fail(box); return; }
+  const {cleanAxis, tip, placeTip, tipRow, sr} = window.iz;
+  const rows = h.data.map(r => ({t: new Date(r.time), list: r.list, p: +r.yes})).filter(r => !isNaN(r.t));
+  const series = d3.groups(rows, r => r.list).map(([k, v]) => ({k, v: v.sort((a, b) => a.t - b.t), c: k.startsWith('United') ? dash.colors[0] : dash.colors[1]}));
+  const W = box.clientWidth || 600, H = 240, m = {t: 10, r: 44, b: 26, l: 36};
+  const x = d3.scaleUtc(d3.extent(rows, r => r.t), [m.l, W - m.r]);
+  const y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 110))).tickFormat(d3.timeFormat('%-d. %b')).tickSizeOuter(0)).call(cleanAxis);
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('.0%')).tickSize(-(W - m.l - m.r))).call(cleanAxis).call(g => g.select('.domain').remove());
+  svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(.5)).attr('y2', y(.5)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  const line = d3.line().x(d => x(d.t)).y(d => y(d.p));
+  series.forEach(s => {
+    svg.append('path').datum(s.v).attr('fill', 'none').attr('stroke', s.c).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', line);
+    const last = s.v[s.v.length - 1];
+    svg.append('circle').attr('cx', x(last.t)).attr('cy', y(last.p)).attr('r', 3.5).attr('fill', s.c);
+  });
+  // end labels, kept apart
+  const ends = series.map(s => ({s, y: y(s.v[s.v.length - 1].p)})).sort((a, b) => a.y - b.y);
+  if (ends.length === 2 && ends[1].y - ends[0].y < 14) { const mid = (ends[0].y + ends[1].y) / 2; ends[0].y = mid - 7; ends[1].y = mid + 7; }
+  ends.forEach(e => svg.append('text').attr('x', W - m.r + 6).attr('y', e.y).attr('dy', '0.35em').attr('fill', e.s.c).style('font-size', 'var(--cds-font-size-caption)').style('font-weight', 600).text(d3.format('.0%')(e.s.v[e.s.v.length - 1].p)));
+  // hover
+  const tp = tip(box), rule = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-axis)').attr('visibility', 'hidden');
+  const dots = series.map(s => svg.append('circle').attr('r', 4).attr('fill', s.c).attr('visibility', 'hidden'));
+  const bis = d3.bisector(d => d.t).center;
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointermove', ev => {
+      const [px, py] = d3.pointer(ev), t = x.invert(px);
+      tp.textContent = ''; const hd = document.createElement('div'); hd.className = 't'; hd.textContent = d3.timeFormat('%-d. %b, %H:%M')(t); tp.appendChild(hd);
+      series.forEach((s, i) => { const d = s.v[bis(s.v, t)]; dots[i].attr('cx', x(d.t)).attr('cy', y(d.p)).attr('visibility', 'visible'); tipRow(tp, s.c, sr(s.k), d3.format('.1%')(d.p)); });
+      rule.attr('x1', px).attr('x2', px).attr('visibility', 'visible'); tp.hidden = false; placeTip(box, tp, px * box.clientWidth / W, py);
+    })
+    .on('pointerleave', () => { tp.hidden = true; rule.attr('visibility', 'hidden'); dots.forEach(d => d.attr('visibility', 'hidden')); });
+});
+</script>
+
+<script>
+// Turnout chart + table
+dash.onData(() => {
+  const box = document.getElementById('turnout-chart');
+  const t = dash.data('turnout'), f = dash.data('facts');
+  box.querySelectorAll('svg, .iz-fail').forEach(e => e.remove());
+  const tb = document.querySelector('#turnout-table tbody');
+  if (t.status !== 'ok') { if (t.status === 'error') window.iz.fail(box); tb.textContent = ''; return; }
+  const {cleanAxis, tip, placeTip, tipRow, pct1} = window.iz;
+  const rows = window.iz.turnoutRows(t.data);
+  const fin = f.status === 'ok' ? +(f.data.find(r => r.key === 'turnout_2023') || {}).value : null;
+  const pj = window.iz.projectTurnout(rows, fin);
+  const W = box.clientWidth || 600, H = 260, m = {t: 14, r: 104, b: 26, l: 36};
+  const x = d3.scaleLinear([7, 20], [m.l, W - m.r]);
+  const y = d3.scaleLinear([0, 90], [H - m.b, m.t]);
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([7, 10, 13, 16, 20]).tickFormat(d => String(d).padStart(2, '0') + ':00').tickSizeOuter(0)).call(cleanAxis);
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(d => d + '%').tickSize(-(W - m.l - m.r))).call(cleanAxis).call(g => g.select('.domain').remove());
+  if (fin) {
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(fin)).attr('y2', y(fin)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', W - m.r + 6).attr('y', y(fin)).attr('dy', '0.35em').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text('konačna 2023: ' + pct1(fin));
+  }
+  const ln = d3.line().x(d => x(d.h)).y(d => y(d.v));
+  const sNow = rows.filter(r => r.now != null && !r.unofficial).map(r => ({h: r.h, v: r.now}));
+  const sOld = rows.filter(r => r.old != null).map(r => ({h: r.h, v: r.old}));
+  if (fin != null && !sOld.some(d => d.h === 20)) sOld.push({h: 20, v: fin});
+  svg.append('line').attr('x1', x(20)).attr('x2', x(20)).attr('y1', m.t + 6).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('x', x(20)).attr('y', m.t).attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text('zatvaranje');
+  // projection: band from the last reading to the range at 20:00
+  if (pj.mid != null && pj.last) {
+    svg.append('path').attr('d', `M${x(pj.last.h)},${y(pj.last.now)}L${x(20)},${y(pj.high)}L${x(20)},${y(pj.low)}Z`).attr('fill', dash.colors[2]).attr('fill-opacity', 0.14);
+    svg.append('line').attr('x1', x(pj.last.h)).attr('y1', y(pj.last.now)).attr('x2', x(20)).attr('y2', y(pj.mid)).attr('stroke', dash.colors[2]).attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
+    svg.append('circle').attr('cx', x(20)).attr('cy', y(pj.mid)).attr('r', 4).attr('fill', 'var(--color-panel)').attr('stroke', dash.colors[2]).attr('stroke-width', 2);
+    svg.append('text').attr('x', x(20) + 8).attr('y', y(pj.mid)).attr('dy', '0.35em').attr('fill', dash.colors[2]).style('font-size', 'var(--cds-font-size-caption)').style('font-weight', 600).text('procjena ' + pct1(pj.mid));
+  }
+  [[sOld, 'var(--cds-chart-muted)'], [sNow, dash.colors[2]]].forEach(([s, c]) => {
+    svg.append('path').datum(s).attr('fill', 'none').attr('stroke', c).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', ln);
+    svg.append('g').selectAll('circle').data(s).join('circle').attr('cx', d => x(d.h)).attr('cy', d => y(d.v)).attr('r', 3).attr('fill', c);
+  });
+  // unofficial readings: hollow dots, not part of the line
+  svg.append('g').selectAll('circle').data(rows.filter(r => r.now != null && r.unofficial)).join('circle')
+    .attr('cx', d => x(d.h)).attr('cy', d => y(d.now)).attr('r', 3.5).attr('fill', 'var(--color-panel)').attr('stroke', dash.colors[2]).attr('stroke-width', 1.5);
+  if (sNow.length) {
+    const last = sNow[sNow.length - 1];
+    svg.append('text').attr('x', x(last.h) - 6).attr('y', y(last.v) - 10).attr('text-anchor', 'end').attr('fill', dash.colors[2]).style('font-size', 'var(--cds-font-size-caption)').style('font-weight', 600).text(pct1(last.v));
+  }
+  const tp = tip(box);
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', d => x(d.h) - 14).attr('y', m.t).attr('width', 28).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointerenter pointermove', (ev, d) => {
+      const [px, py] = d3.pointer(ev, box);
+      tp.textContent = ''; const hd = document.createElement('div'); hd.className = 't'; hd.textContent = d.time + (d.src ? ' · ' + d.src : ''); tp.appendChild(hd);
+      if (d.now != null) tipRow(tp, dash.colors[2], '2026', pct1(d.now)); if (d.old != null) tipRow(tp, 'var(--cds-chart-muted)', '2023', pct1(d.old));
+      if (d.h === 20 && pj.mid != null) tipRow(tp, null, 'Procjena 2026', pct1(pj.low) + ' – ' + pct1(pj.high));
+      tp.hidden = false; placeTip(box, tp, px, py);
+    }).on('pointerleave', () => tp.hidden = true);
+  tb.textContent = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    [[r.time, ''], [r.now == null ? '—' : pct1(r.now), 'num'], [r.old == null ? '—' : pct1(r.old), 'num'], [r.src || '', '']].forEach(([v, c]) => { const td = document.createElement('td'); td.className = c; td.textContent = v; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+});
+</script>
+
+<script>
+// Polls chart + table
+dash.onData(() => {
+  const box = document.getElementById('polls-chart');
+  const p = dash.data('polls');
+  box.querySelectorAll('svg, .iz-fail').forEach(e => e.remove());
+  const tb = document.querySelector('#polls-table tbody');
+  if (p.status !== 'ok') { if (p.status === 'error') window.iz.fail(box); tb.textContent = ''; return; }
+  const {cleanAxis, tip, placeTip, tipRow, pct1} = window.iz;
+  const rows = p.data.map(r => ({date: new Date(r.published), pub: r.published, who: r.pollster, n: +r.sample, sns: +r.sns, stu: +r.student_list, sps: r.sps === '' ? null : +r.sps, note: r.note})).sort((a, b) => a.date - b.date);
+  const W = box.clientWidth || 600, H = 240, m = {t: 12, r: 16, b: 26, l: 36};
+  const x = d3.scaleUtc([new Date('2026-04-15'), new Date('2026-10-31')], [m.l, W - m.r]);
+  const y = d3.scaleLinear([20, 55], [H - m.b, m.t]);
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(d3.utcMonth.every(W < 420 ? 2 : 1)).tickFormat(d3.utcFormat('%b')).tickSizeOuter(0)).call(cleanAxis);
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d => d + '%').tickSize(-(W - m.l - m.r))).call(cleanAxis).call(g => g.select('.domain').remove());
+  // connecting stems between the two shares in each poll
+  svg.append('g').selectAll('line').data(rows).join('line').attr('x1', d => x(d.date)).attr('x2', d => x(d.date)).attr('y1', d => y(d.sns)).attr('y2', d => y(d.stu)).attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 2);
+  [['sns', dash.colors[0]], ['stu', dash.colors[1]]].forEach(([k, c]) => {
+    svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', d => x(d.date)).attr('cy', d => y(d[k])).attr('r', 5).attr('fill', c);
+  });
+  const tp = tip(box);
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', d => x(d.date) - 9).attr('y', m.t).attr('width', 18).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointerenter pointermove', (ev, d) => {
+      const [px, py] = d3.pointer(ev, box);
+      tp.textContent = ''; const hd = document.createElement('div'); hd.className = 't'; hd.textContent = d.who + ' · ' + d3.utcFormat('%-d. %b')(d.date) + ' · uzorak ' + d3.format(',')(d.n); tp.appendChild(hd);
+      tipRow(tp, dash.colors[0], 'Koalicija oko SNS-a', pct1(d.sns)); tipRow(tp, dash.colors[1], 'Studentska lista', pct1(d.stu));
+      tp.hidden = false; placeTip(box, tp, px, py);
+    }).on('pointerleave', () => tp.hidden = true);
+  tb.textContent = '';
+  rows.slice().reverse().forEach(r => {
+    const tr = document.createElement('tr'); tr.dataset.key = r.pub;
+    [[d3.utcFormat('%-d. %b')(r.date), ''], [r.who, ''], [d3.format(',')(r.n), 'num'], [pct1(r.sns), 'num'], [pct1(r.stu), 'num'], [r.sps == null ? '' : pct1(r.sps), 'num']].forEach(([v, c], i) => {
+      const td = document.createElement('td'); td.className = c; td.textContent = v;
+      if (i === 3 && r.sns > r.stu) td.style.fontWeight = '600'; if (i === 4 && r.stu > r.sns) td.style.fontWeight = '600';
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+});
+</script>
+
+<script>
+// 2023 parliament
+dash.onData(() => {
+  const box = document.getElementById('seats-chart'), leg = document.getElementById('seats-legend');
+  const r = dash.data('results_2023'), f = dash.data('facts');
+  box.querySelectorAll('svg, .iz-fail').forEach(e => e.remove()); leg.textContent = '';
+  const tb = document.querySelector('#r23-table tbody');
+  if (r.status !== 'ok') { if (r.status === 'error') window.iz.fail(box); tb.textContent = ''; return; }
+  const {tip, placeTip, tipRow, pct1} = window.iz;
+  const rows = r.data.map(d => ({list: d.list, short: d.short, pct: +d.vote_pct, seats: +d.seats, chg: d.seat_change === '' ? null : +d.seat_change}));
+  const fv = f.status === 'ok' ? Object.fromEntries(f.data.map(d => [d.key, +d.value])) : {};
+  const total = fv.seats || d3.sum(rows, d => d.seats), maj = fv.majority;
+  const palette = [dash.colors[0], dash.colors[3], dash.colors[4], dash.colors[5], dash.colors[6]];
+  const colorOf = (d, i) => i < palette.length ? palette[i] : 'var(--cds-chart-muted)';
+  const W = box.clientWidth || 600, H = 80, m = {t: 18, b: 22};
+  const x = d3.scaleLinear([0, total], [0, W]);
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  let acc = 0; const segs = rows.map((d, i) => { const s = {...d, x0: acc, c: colorOf(d, i)}; acc += d.seats; return s; });
+  const tp = tip(box);
+  svg.append('g').selectAll('rect').data(segs).join('rect').attr('x', d => x(d.x0)).attr('y', m.t).attr('width', d => Math.max(1, x(d.seats) - x(0) - 1)).attr('height', H - m.t - m.b).attr('fill', d => d.c)
+    .on('pointerenter pointermove', (ev, d) => { const [px, py] = d3.pointer(ev, box); tp.textContent = ''; const hd = document.createElement('div'); hd.className = 't'; hd.textContent = d.list; tp.appendChild(hd); tipRow(tp, d.c, 'Mandati', String(d.seats)); tipRow(tp, null, 'Glasovi', pct1(d.pct)); tp.hidden = false; placeTip(box, tp, px, py); })
+    .on('pointerleave', () => tp.hidden = true);
+  if (maj) {
+    svg.append('line').attr('x1', x(maj)).attr('x2', x(maj)).attr('y1', m.t - 6).attr('y2', H - m.b + 4).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+    const lab = svg.append('text').attr('x', x(maj)).attr('y', m.t - 8).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg)').style('font-size', 'var(--cds-font-size-caption)').text('Većina ' + maj);
+  }
+  const big = segs[0];
+  svg.append('text').attr('x', 6).attr('y', (m.t + H - m.b) / 2).attr('dy', '0.35em').attr('fill', 'var(--color-bg)').style('font-size', 'var(--cds-font-size-caption)').style('font-weight', 600).text(big.short + ' ' + big.seats);
+  svg.append('text').attr('x', W).attr('y', H - 4).attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text(total + ' mandata');
+  segs.slice(0, palette.length).forEach(d => { const s = document.createElement('span'); const sw = document.createElement('span'); sw.className = 'iz-swatch'; sw.style.background = d.c; s.append(sw, document.createTextNode(d.short + ' ' + d.seats)); leg.appendChild(s); });
+  const o = document.createElement('span'); const osw = document.createElement('span'); osw.className = 'iz-swatch'; osw.style.background = 'var(--cds-chart-muted)'; o.append(osw, document.createTextNode('Manjinske liste ' + d3.sum(segs.slice(palette.length), d => d.seats))); leg.appendChild(o);
+  tb.textContent = '';
+  rows.forEach(d => {
+    const tr = document.createElement('tr');
+    const chg = d.chg == null ? 'nova' : (d.chg > 0 ? '+' : d.chg < 0 ? '−' : '') + Math.abs(d.chg);
+    [[d.list, ''], [pct1(d.pct), 'num'], [String(d.seats), 'num'], [chg, 'num']].forEach(([v, c]) => { const td = document.createElement('td'); td.className = c; td.textContent = v; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+});
+</script>
+
+</div>
+</body>
+</html>

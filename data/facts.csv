@@ -1,0 +1,10 @@
+key,value,label
+seats,250,Seats in the National Assembly
+majority,126,Seats needed for a majority
+voters,6450000,Registered voters
+lists,18,Electoral lists on the ballot
+candidates,2418,Candidates
+threshold,3,Threshold (% of votes; waived for minority lists)
+turnout_2023,58.77,Final turnout in 2023
+pm_volume,7854020,Polymarket volume (USD)
+pm_liquidity,3445437,Polymarket liquidity (USD)
